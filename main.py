@@ -8,17 +8,20 @@ from discord.ext import tasks
 from config import DISCORD_BOT_TOKEN, INFURA_URL, ETHERSCAN_TOKEN, DISCORD_CHANNEL_ID
 
 
+
 ETHFLI_TOKEN_ADDRESS = "0xaa6e8127831c9de45ae56bb1b0d4d4da6e5665bd"
 ETHFLI_MANAGER_ADDRESS = "0x445307De5279cD4B1BcBf38853f81b190A806075"
 ETHFLI_STRATEGY_ADAPTER_ADDRESS = "0x1335D01a4B572C37f800f45D9a4b36A53a898a9b"
 ETHFLI_FEE_ADAPTER_ADDRESS = "0x26F81381018543eCa9353bd081387F68fAE15CeD"
 ETHFLI_SUPPLY_CAP_ISSUANCE_ADDRESS = "0x0F1171C24B06ADed18d2d23178019A3B256401D3"
+ETHFLI_COINGECKO_ID = 'eth-2x-flexible-leverage-index'
 
 BTCFLI_TOKEN_ADDRESS = "0x0b498ff89709d3838a063f1dfa463091f9801c2b"
 BTCFLI_MANAGER_ADDRESS = "0xC7Aede3B12daad3ffa48fc96CCB65659fF8D261a"
 BTCFLI_STRATEGY_ADAPTER_ADDRESS = "0x4a99733458349505A6FCbcF6CD0a0eD18666586A"
 BTCFLI_FEE_ADAPTER_ADDRESS = "0xA0D95095577ecDd23C8b4c9eD0421dAc3c1DaF87"
 BTCFLI_SUPPLY_CAP_ISSUANCE_ADDRESS = "0x6C8137F2F552F569CC43BC4642afbe052a12441C"
+BTCFLI_COINGECKO_ID = 'btc-2x-flexible-leverage-index'
 
 
  
@@ -37,7 +40,7 @@ print("current date and time -> ", dt_string)
 @client.event
 async def on_ready():
   channel = client.get_channel(int(DISCORD_CHANNEL_ID))
-  await channel.send("----- ETH2x-FLI -----\n Current Leverage Ratio -> "+ getCurrentLeverageRatio(ETHFLI_STRATEGY_ADAPTER_ADDRESS)+"\n Current Supply / Max Supply -> "+ getCurrentAndTotalSupply(ETHFLI_TOKEN_ADDRESS,ETHFLI_SUPPLY_CAP_ISSUANCE_ADDRESS)+ "\n ----- BTC2x-FLI -----\n Current Leverage Ratio -> "+ getCurrentLeverageRatio(BTCFLI_STRATEGY_ADAPTER_ADDRESS)+"\n Current Supply / Max Supply -> "+ getCurrentAndTotalSupply(BTCFLI_TOKEN_ADDRESS,BTCFLI_SUPPLY_CAP_ISSUANCE_ADDRESS)+ "\n")
+  await channel.send("----- ETH2x-FLI -----\nPrice -> "+ coinGeckoPriceData(ETHFLI_COINGECKO_ID)+"\nCurrent Leverage Ratio -> "+ getCurrentLeverageRatio(ETHFLI_STRATEGY_ADAPTER_ADDRESS)+"\nCurrent Supply / Max Supply -> "+ getCurrentAndTotalSupply(ETHFLI_TOKEN_ADDRESS,ETHFLI_SUPPLY_CAP_ISSUANCE_ADDRESS)+ "\n ----- BTC2x-FLI -----\n Price -> "+ coinGeckoPriceData(BTCFLI_COINGECKO_ID)+ "\n Current Leverage Ratio -> "+ getCurrentLeverageRatio(BTCFLI_STRATEGY_ADAPTER_ADDRESS)+"\n Current Supply / Max Supply -> "+ getCurrentAndTotalSupply(BTCFLI_TOKEN_ADDRESS,BTCFLI_SUPPLY_CAP_ISSUANCE_ADDRESS)+ "\n")
   print('We have logged in as {0.user}'.format(client))
 
 def get_quote():
@@ -48,11 +51,20 @@ def get_quote():
 
 
 # uses etherscan API to pull total token supply
-def etherscanTokenSupply():
-  response = requests.get(f"https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=0xaa6e8127831c9de45ae56bb1b0d4d4da6e5665bd&apikey={ETHERSCAN_TOKEN}")
+def etherscanTokenSupply(contractAddress):
+  response = requests.get(f"https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress={contractAddress}&apikey={ETHERSCAN_TOKEN}")
   data3 = json.loads(response.text)
   supply = int(data3['result'])/1000000000000000000
   return(f'the current total supply for ETH2x-FLI is {supply}')
+
+
+# uses coingecko API for prices
+def coinGeckoPriceData(token_id):
+  response = requests.get(f"https://api.coingecko.com/api/v3/simple/price?ids={token_id}&vs_currencies=usd")
+  data3 = json.loads(response.text)
+  # print("$"+str(data3[f'{token_id}']['usd']))
+  return("$"+str(data3[f'{token_id}']['usd']))
+
 
 def getAbi(contractAddress):
   response = requests.get(f"https://api.etherscan.io/api?module=contract&action=getabi&address={contractAddress}&apikey={ETHERSCAN_TOKEN}")
@@ -109,6 +121,10 @@ def getCurrentAndTotalSupply(address,address1):
 
 # getCurrentAndTotalSupply(ETHFLI_TOKEN_ADDRESS,ETHFLI_SUPPLY_CAP_ISSUANCE_ADDRESS)
 
+# coinGeckoPriceData(BTCFLI_COINGECKO_ID)
+
+# coinGeckoPriceData(ETHFLI_COINGECKO_ID)
+
 @client.event
 async def on_message(message):
   if message.author == client.user:
@@ -146,9 +162,10 @@ async def after_slow_count():
     print('done!')
 
 # slow_count.start()
-
+  
 
 client.run(DISCORD_BOT_TOKEN)
     
-client.close()
+    
+
 
