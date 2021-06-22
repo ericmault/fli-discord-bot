@@ -40,7 +40,7 @@ print("current date and time -> ", dt_string)
 @client.event
 async def on_ready():
   channel = client.get_channel(int(DISCORD_CHANNEL_ID))
-  await channel.send("----- ETH2x-FLI -----\nPrice -> "+ coinGeckoPriceData(ETHFLI_COINGECKO_ID)+"\nCurrent Leverage Ratio -> "+ getCurrentLeverageRatio(ETHFLI_STRATEGY_ADAPTER_ADDRESS)+"\nCurrent Supply / Max Supply -> "+ getCurrentAndTotalSupply(ETHFLI_TOKEN_ADDRESS,ETHFLI_SUPPLY_CAP_ISSUANCE_ADDRESS)+ "\n ----- BTC2x-FLI -----\n Price -> "+ coinGeckoPriceData(BTCFLI_COINGECKO_ID)+ "\n Current Leverage Ratio -> "+ getCurrentLeverageRatio(BTCFLI_STRATEGY_ADAPTER_ADDRESS)+"\n Current Supply / Max Supply -> "+ getCurrentAndTotalSupply(BTCFLI_TOKEN_ADDRESS,BTCFLI_SUPPLY_CAP_ISSUANCE_ADDRESS)+ "\n")
+  await channel.send("----- ETH2x-FLI -----\nPrice -> "+ coinGeckoPriceData(ETHFLI_COINGECKO_ID)+"\nCurrent Leverage Ratio -> "+ getCurrentLeverageRatio(ETHFLI_STRATEGY_ADAPTER_ADDRESS)+"\nCurrent Supply / Max Supply -> "+ getCurrentAndTotalSupply(ETHFLI_TOKEN_ADDRESS,ETHFLI_SUPPLY_CAP_ISSUANCE_ADDRESS)+ "\n \n ----- BTC2x-FLI -----\n Price -> "+ coinGeckoPriceData(BTCFLI_COINGECKO_ID)+ "\n Current Leverage Ratio -> "+ getCurrentLeverageRatio(BTCFLI_STRATEGY_ADAPTER_ADDRESS)+"\n Current Supply / Max Supply -> "+ getCurrentAndTotalSupply(BTCFLI_TOKEN_ADDRESS,BTCFLI_SUPPLY_CAP_ISSUANCE_ADDRESS)+ "\n")
   print('We have logged in as {0.user}'.format(client))
 
 def get_quote():
